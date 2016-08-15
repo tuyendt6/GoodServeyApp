@@ -10,7 +10,9 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Html;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -154,14 +156,18 @@ public class ProfileDearlerActivity extends AppCompatActivity implements View.On
         Log.e("tuyenpx", "ss flag_check = " + flag_check);
         Log.e("tuyenpx", "ss c.getcount = " + c.getCount());
         if (c != null & c.getCount() > 0 && flag_check.trim().equals("true")) {
+            StringBuilder stringBuilder = new StringBuilder();
+
+            int n = 0;
+
             while (c.moveToNext()) {
                 String Date = c.getString(c.getColumnIndexOrThrow(tblEncuestaDatos.FECHAHORA_ENCUESTA));
                 Log.e("tuyenpx ", "getPKID pkID = " + pkID);
                 Log.e("tuyenpx ", "compare Date = " + Date + "Util.String_Date_Servey.trim() " + Util.String_Date_Servey.trim());
                 if (Util.String_Date_Servey.trim().equals(ConverString(Date).trim())) {
-
+                    n++;
                     mStartSerVey.setVisibility(View.GONE);
-                    mAddress.setText(getServeyName(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID))));
+
                     insertQuestion(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID)));
                     Log.e("tuyenpx", "mlistquestion size = " + arrayList.size());
 
@@ -173,22 +179,27 @@ public class ProfileDearlerActivity extends AppCompatActivity implements View.On
 
                         arrayList.get(i).Answer = getAnserName(value);
                     }
-                    StringBuilder stringBuilder = new StringBuilder();
+
+                    if (n > 1) {
+                        stringBuilder.append("<font color=#424242> <b> " + getServeyName(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID))) + " </b> </font> " + "<br>");
+                    } else {
+                        mAddress.setText(getServeyName(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID))));
+                        mAddress.setGravity(Gravity.LEFT);
+                    }
+
 
                     for (int i = 0; i < arrayList.size(); i++) {
-                        stringBuilder.append(arrayList.get(i).Question + " : " + arrayList.get(i).Answer + "\n");
+                        stringBuilder.append(arrayList.get(i).Question + " : " + arrayList.get(i).Answer + "<br>");
                     }
-                    String value = stringBuilder.toString();
-                    Log.e("tuyenpx", "value" + value);
-                    mCity.setText(value);
-                    Log.e("tuyenpx", "mCity = " + mCity.getText().toString());
                 }
-
             }
+            String value = stringBuilder.toString();
+            Log.e("tuyenpx", "value" + value);
+            mCity.setText(Html.fromHtml(value));
+            mCity.setGravity(Gravity.LEFT);
+            Log.e("tuyenpx", "mCity = " + mCity.getText().toString());
         }
         c.close();
-
-
     }
 
 
