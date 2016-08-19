@@ -83,6 +83,7 @@ public class MapsActivity extends Fragment {
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
 
                 // Obtain the map from a MapFragment or MapView.
 

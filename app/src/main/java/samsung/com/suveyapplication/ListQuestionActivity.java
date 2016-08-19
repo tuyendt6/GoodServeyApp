@@ -266,13 +266,13 @@ public class ListQuestionActivity extends AppCompatActivity {
                     c.getString(c.getColumnIndexOrThrow(tblEncuestaPreguntas.NOMBRE_COLUMNA)), c.getString(c.getColumnIndexOrThrow(tblEncuestaPreguntas.TEXTO_PREGUNTA)),
                     c.getString(c.getColumnIndexOrThrow(tblEncuestaPreguntas.Q_TYPE)), getQuestionType(c.getString(c.getColumnIndexOrThrow(tblEncuestaRespuestas.GRUPO_RESQUEST_AS_ID))), getQuestionTypeDes(c.getString(c.getColumnIndexOrThrow(tblEncuestaRespuestas.GRUPO_RESQUEST_AS_ID))),
                     "0", 1, c.getString(c.getColumnIndexOrThrow(tblEncuestaRespuestas.GRUPO_RESQUEST_AS_ID)));
-            mDescription.setText(questionObject.getQuestionTypeDescription());
-            mListQuestionOjbect.add(questionObject);
-            questionAdapter.notifyDataSetChanged();
+
+                mDescription.setText(questionObject.getQuestionTypeDescription());
+                mListQuestionOjbect.add(questionObject);
+                questionAdapter.notifyDataSetChanged();
         }
         c.close();
     }
-
 
     private String getQuestionType(String ID) {
         Cursor d = getContentResolver().query(SamsungProvider.URI_ENCURESTA_RESPUESTAS, null, tblEncuestaRespuestas.GRUPO_RESQUEST_AS_ID + "=?", new String[]{ID}, null);
@@ -280,7 +280,7 @@ public class ListQuestionActivity extends AppCompatActivity {
         while (d.moveToNext()) {
             result = result + d.getString(d.getColumnIndexOrThrow(tblEncuestaRespuestas.DESCRIPCION)) + ";" + d.getString(d.getColumnIndexOrThrow(tblEncuestaRespuestas.PK_ID)) + "@@";
         }
-        Log.e("tuyenpx","quesstion type = "+ result);
+        Log.e("tuyenpx", "quesstion type = " + result);
         d.close();
         result = result.substring(0, result.length() - 2);
         return result;
@@ -300,6 +300,8 @@ public class ListQuestionActivity extends AppCompatActivity {
     boolean flag = false;
 
     class PostDealerData extends AsyncTask<Void, Void, Void> {
+
+        StringBuilder ContentEmail = new StringBuilder();
 
 
         @Override
@@ -321,19 +323,28 @@ public class ListQuestionActivity extends AppCompatActivity {
                 List<NameValuePair> nameValuePair = new ArrayList<>(0);
                 Log.e("tuyenpx", "Util.ServeySelected.getPK_ID()" + Util.ServeySelected.getPK_ID());
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.DISENO_ID, Util.ServeySelected.getPK_ID()));
+                ContentEmail.append(tblEncuestaDatos.DISENO_ID + " : " + Util.ServeySelected.getPK_ID() + " \n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.VENDEDOR_ID, ID));
+                ContentEmail.append(tblEncuestaDatos.VENDEDOR_ID + " : " + ID + " \n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PDV_ID, Util.DealerSelected.getPKID()));
+                ContentEmail.append(tblEncuestaDatos.PDV_ID + " : " + Util.DealerSelected.getPKID() + " \n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.FECHAHORA_ENCUESTA, getCurrentDateAndTime()));//update date vao day
+                ContentEmail.append(tblEncuestaDatos.FECHAHORA_ENCUESTA + " : " + Util.DealerSelected.getPKID() + " \n");
 
                 if (Lat == 0.0 || Lang == 0.0) {
                     Lat = 8.982861;
                     Lang = -79.526903;
                 }
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.POSICIONENCUESTA_LON, Lang + ""));
+                ContentEmail.append(tblEncuestaDatos.POSICIONENCUESTA_LON + " : " + Lang + " \n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.POSICIONENCUESTA_LAT, Lat + ""));
+                ContentEmail.append(tblEncuestaDatos.POSICIONENCUESTA_LAT + " : " + Lat + " \n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.FECHA_HORA_REGISTRO, getCurrentDateAndTime()));//dont understand what mean ?
+                ContentEmail.append(tblEncuestaDatos.FECHA_HORA_REGISTRO + " : " + getCurrentDateAndTime() + " \n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.POSICION_REGISTROLAT, ""));
+                ContentEmail.append(tblEncuestaDatos.POSICION_REGISTROLAT + " : " + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.POSOCION_REGISTRO_LON, ""));
+                ContentEmail.append(tblEncuestaDatos.POSOCION_REGISTRO_LON + " : " + "\n");
                 int i = mListQuestionOjbect.size();
                 Log.e("tuyenpx", "int i = mListQuestionOjbect.get(0).getQuestionAnswer() " + mListQuestionOjbect.get(0).getQuestionAnswer());
                 Log.e("tuyenpx", "int i = Util.DealerSelected.getPKID() " + Util.DealerSelected.getPKID());
@@ -352,6 +363,7 @@ public class ListQuestionActivity extends AppCompatActivity {
                         break;
                     case 1:
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_01, mListQuestionOjbect.get(0).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_02, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_03, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_04, ""));
@@ -365,6 +377,8 @@ public class ListQuestionActivity extends AppCompatActivity {
                     case 2:
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_01, mListQuestionOjbect.get(0).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_02, mListQuestionOjbect.get(1).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_03, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_04, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_05, ""));
@@ -378,6 +392,9 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_01, mListQuestionOjbect.get(0).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_02, mListQuestionOjbect.get(1).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_03, mListQuestionOjbect.get(2).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_04, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_05, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_06, ""));
@@ -391,6 +408,10 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_02, mListQuestionOjbect.get(1).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_03, mListQuestionOjbect.get(2).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_04, mListQuestionOjbect.get(3).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_05, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_06, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_07, ""));
@@ -404,6 +425,11 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_03, mListQuestionOjbect.get(2).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_04, mListQuestionOjbect.get(3).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_05, mListQuestionOjbect.get(4).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_05 + " : " + mListQuestionOjbect.get(4).getQuestionAnswer() + "\n");
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_06, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_07, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_08, ""));
@@ -417,6 +443,15 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_04, mListQuestionOjbect.get(3).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_05, mListQuestionOjbect.get(4).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_06, mListQuestionOjbect.get(5).getQuestionAnswer()));
+
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_05 + " : " + mListQuestionOjbect.get(4).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_06 + " : " + mListQuestionOjbect.get(5).getQuestionAnswer() + "\n");
+
+
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_07, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_08, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_09, ""));
@@ -430,6 +465,16 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_05, mListQuestionOjbect.get(4).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_06, mListQuestionOjbect.get(5).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_07, mListQuestionOjbect.get(6).getQuestionAnswer()));
+
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_05 + " : " + mListQuestionOjbect.get(4).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_06 + " : " + mListQuestionOjbect.get(5).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_07 + " : " + mListQuestionOjbect.get(6).getQuestionAnswer() + "\n");
+
+
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_08, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_09, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_10, ""));
@@ -443,6 +488,17 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_06, mListQuestionOjbect.get(5).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_07, mListQuestionOjbect.get(6).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_08, mListQuestionOjbect.get(7).getQuestionAnswer()));
+
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_05 + " : " + mListQuestionOjbect.get(4).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_06 + " : " + mListQuestionOjbect.get(5).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_07 + " : " + mListQuestionOjbect.get(6).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_08 + " : " + mListQuestionOjbect.get(7).getQuestionAnswer() + "\n");
+
+
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_09, ""));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_10, ""));
                         break;
@@ -456,6 +512,15 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_07, mListQuestionOjbect.get(6).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_08, mListQuestionOjbect.get(7).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_09, mListQuestionOjbect.get(8).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_05 + " : " + mListQuestionOjbect.get(4).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_06 + " : " + mListQuestionOjbect.get(5).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_07 + " : " + mListQuestionOjbect.get(6).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_08 + " : " + mListQuestionOjbect.get(7).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_09 + " : " + mListQuestionOjbect.get(8).getQuestionAnswer() + "\n");
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_10, ""));
                         break;
                     case 10:
@@ -470,6 +535,16 @@ public class ListQuestionActivity extends AppCompatActivity {
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_08, mListQuestionOjbect.get(7).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_09, mListQuestionOjbect.get(8).getQuestionAnswer()));
                         nameValuePair.add(new BasicNameValuePair(tblEncuestaDatos.PREGUNTA_10, mListQuestionOjbect.get(9).getQuestionAnswer()));
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_01 + " : " + mListQuestionOjbect.get(0).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_02 + " : " + mListQuestionOjbect.get(1).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_03 + " : " + mListQuestionOjbect.get(2).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_04 + " : " + mListQuestionOjbect.get(3).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_05 + " : " + mListQuestionOjbect.get(4).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_06 + " : " + mListQuestionOjbect.get(5).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_07 + " : " + mListQuestionOjbect.get(6).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_08 + " : " + mListQuestionOjbect.get(7).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_09 + " : " + mListQuestionOjbect.get(8).getQuestionAnswer() + "\n");
+                        ContentEmail.append(tblEncuestaDatos.PREGUNTA_10 + " : " + mListQuestionOjbect.get(9).getQuestionAnswer() + "\n");
                         break;
                 }
 
@@ -483,10 +558,10 @@ public class ListQuestionActivity extends AppCompatActivity {
                     flag = true;
                     ContentValues contentValues = new ContentValues();
                     contentValues.put(tblEncuestaDatos.SYS, "true");
-                    getContentResolver().update(SamsungProvider.URI_ENCUESTADATOS,contentValues,tblEncuestaDatos.DISENO_ID + "=?", new String[]{Util.ServeySelected.getPK_ID()});
+                    getContentResolver().update(SamsungProvider.URI_ENCUESTADATOS, contentValues, tblEncuestaDatos.DISENO_ID + "=?", new String[]{Util.ServeySelected.getPK_ID()});
 
 
-                //    getContentResolver().update(SamsungProvider.URI_ENCUESTADATOS, tblEncuestaDatos.DISENO_ID + "=?", new String[]{Util.ServeySelected.getPK_ID()});
+                    //    getContentResolver().update(SamsungProvider.URI_ENCUESTADATOS, tblEncuestaDatos.DISENO_ID + "=?", new String[]{Util.ServeySelected.getPK_ID()});
                 } else {
                     Log.e("AddDealer", "upload fail" + resp);
                 }
@@ -502,11 +577,13 @@ public class ListQuestionActivity extends AppCompatActivity {
             if (flag == true) {
                 Intent i = new Intent(getBaseContext(), SuccesAcitivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("ContentEmail",ContentEmail.toString());
                 startActivity(i);
                 finish();
             } else {
                 Intent i = new Intent(getBaseContext(), CancelActivity.class);
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.putExtra("ContentEmail",ContentEmail.toString());
                 startActivity(i);
                 finish();
             }
@@ -521,7 +598,7 @@ public class ListQuestionActivity extends AppCompatActivity {
 
     //2015-05-15 00:00:00.000
     private String getCurrentDateAndTime() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.000");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
         String currentDateandTime = sdf.format(new Date());
         return currentDateandTime;
 

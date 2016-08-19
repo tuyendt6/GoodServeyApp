@@ -180,8 +180,8 @@ public class ProfileDearlerActivity extends AppCompatActivity implements View.On
                         arrayList.get(i).Answer = getAnserName(value);
                     }
 
-                    if (n > 1) {
-                        stringBuilder.append("<font color=#424242> <b> " + getServeyName(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID))) + " </b> </font> " + "<br>");
+                    if (n >= 1) {
+                        stringBuilder.append("<font color=#424242> <b> " + getServeyName(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID))) + " </b></font> "+"<font color=#F44336>  " +"       Survey "+ n+ "</font> " + "<br>");
                     } else {
                         mAddress.setText(getServeyName(c.getString(c.getColumnIndex(tblEncuestaDatos.DISENO_ID))));
                         mAddress.setGravity(Gravity.LEFT);
@@ -341,6 +341,7 @@ public class ProfileDearlerActivity extends AppCompatActivity implements View.On
                 .tilt(30)                   // Sets the tilt of the camera to 30 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
     }
 
     @Override

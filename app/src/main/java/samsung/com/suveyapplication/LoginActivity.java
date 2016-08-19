@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mTxtPass;
     private Button mLogin;
     private String VenderesID = "";
+    private String Email = "" ;
 
     // from the link above
     @Override
@@ -74,6 +75,7 @@ public class LoginActivity extends AppCompatActivity {
                     boolean login = CheckLogin(mTxtName.getText().toString(), mTxtPass.getText().toString());
                     if (login) {
                         editor.putString("venderID", VenderesID);
+                        editor.putString("email", Email);
                         editor.commit();
                         Intent i = new Intent(getBaseContext(), MainAcitivity.class);
                         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -103,8 +105,10 @@ public class LoginActivity extends AppCompatActivity {
             String User = c.getString(c.getColumnIndexOrThrow(tblVendedores.NOMBRE_USUARIO));
             String Pass = c.getString(c.getColumnIndexOrThrow(tblVendedores.CLAVE));
             String ID = c.getString(c.getColumnIndexOrThrow(tblVendedores.PK_ID));
+            String email = c.getString(c.getColumnIndex(tblVendedores.Email1));
             if (User.equals(UserName) && Pass.equals(PassWord)) {
                 VenderesID = ID;
+                Email = email;
                 return true;
             }
         }

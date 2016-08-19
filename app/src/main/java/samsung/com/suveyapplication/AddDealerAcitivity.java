@@ -268,10 +268,6 @@ public class AddDealerAcitivity extends Fragment implements GoogleApiClient.Conn
                     Toast.makeText(getActivity().getBaseContext(), "Name Can not null", Toast.LENGTH_SHORT).show();
                     return false;
                 }
-                if (Address.equals("")) {
-                    Toast.makeText(getActivity().getBaseContext(), "Address Can not null", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
                 if (Email.equals("")) {
                     Toast.makeText(getActivity().getBaseContext(), "Email Can not null", Toast.LENGTH_SHORT).show();
                     return false;
@@ -363,6 +359,8 @@ public class AddDealerAcitivity extends Fragment implements GoogleApiClient.Conn
                 .tilt(30)                   // Sets the tilt of the camera to 30 degrees
                 .build();                   // Creates a CameraPosition from the builder
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+
     }
 
     @Override
@@ -389,6 +387,7 @@ public class AddDealerAcitivity extends Fragment implements GoogleApiClient.Conn
             // Check if we were successful in obtaining the map.
             if (mMap != null) {
                 mMap.setMyLocationEnabled(true);
+                mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
                 mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng latLng) {
@@ -420,6 +419,8 @@ public class AddDealerAcitivity extends Fragment implements GoogleApiClient.Conn
 
 
     class PostDealerData extends AsyncTask<Dealer, Void, Void> {
+        StringBuilder contentEmail = new StringBuilder();
+
         @Override
         protected Void doInBackground(Dealer[] params) {
             Dealer dealer = params[0];
@@ -431,19 +432,33 @@ public class AddDealerAcitivity extends Fragment implements GoogleApiClient.Conn
             try {
                 List<NameValuePair> nameValuePair = new ArrayList<>(0);
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.FACT_DEFT_ID, ""));
+                contentEmail.append(tblPuntosDeVenta.FACT_DEFT_ID + " : " + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.NOMBRE, dealer.getDealerName()));
+                contentEmail.append(tblPuntosDeVenta.NOMBRE + " : " + dealer.getDealerName() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.DIRECCION, dealer.getAdress()));
+                contentEmail.append(tblPuntosDeVenta.DIRECCION + " : " + dealer.getAdress() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.PROVINCIAID, mDistritos.getProvincialID()));
+                contentEmail.append(tblPuntosDeVenta.PROVINCIAID + " : " + dealer.getAdress() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.DISTRITOID, mDistritos.getDistritoID()));
+                contentEmail.append(tblPuntosDeVenta.DISTRITOID + " : " + mDistritos.getDistritoID() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.CORREGIMIENTOID, mCorregimientosItem.getCorregimientosID()));
+                contentEmail.append(tblPuntosDeVenta.CORREGIMIENTOID + " : " + mCorregimientosItem.getCorregimientosID() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.ZONAID, ""));
+                contentEmail.append(tblPuntosDeVenta.ZONAID + " : " + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.EMAIL1, email));
+                contentEmail.append(tblPuntosDeVenta.EMAIL1 + " : " + email + "\n");
                 nameValuePair.add(new BasicNameValuePair("Email2", ""));
+                contentEmail.append("Email2" + " : " + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.DESCCION_ADICIONALES, ""));
+                contentEmail.append(tblPuntosDeVenta.DESCCION_ADICIONALES + " : " + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.TELEFONO, dealer.getPhoneNumber()));
+                contentEmail.append(tblPuntosDeVenta.TELEFONO + " : " + dealer.getPhoneNumber() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.ACTIVO, dealer.getStatus()));
+                contentEmail.append(tblPuntosDeVenta.ACTIVO + " : " + dealer.getStatus() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.POSION_LAT, dealer.getLatitud()));
+                contentEmail.append(tblPuntosDeVenta.POSION_LAT + " : " + dealer.getLatitud() + "\n");
                 nameValuePair.add(new BasicNameValuePair(tblPuntosDeVenta.POSION_LON, dealer.getLongGitude()));
+                contentEmail.append(tblPuntosDeVenta.POSION_LON + " : " + dealer.getLongGitude() + "\n");
 
 
                 httppost.setEntity(new UrlEncodedFormEntity(nameValuePair, "UTF-8"));
@@ -472,14 +487,17 @@ public class AddDealerAcitivity extends Fragment implements GoogleApiClient.Conn
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("question", Context.MODE_PRIVATE);
+
+            if (contentEmail != null) {
+                Util.sendEmail(getActivity().getBaseContext() , sharedPreferences.getString("email","tuyendt6@gmail.com"),"add new dealer" , contentEmail.toString());
+            }
             DrawerLayout drawer = (DrawerLayout) getActivity().findViewById(R.id.drawer_layout);
             if (drawer != null)
                 drawer.closeDrawer(GravityCompat.START);
-
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             fragmentManager.beginTransaction()
                     .replace(R.id.frame_container, new AllDealerActivity()).commit();
-
         }
     }
 
